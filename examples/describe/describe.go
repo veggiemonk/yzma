@@ -47,14 +47,14 @@ func describe(tmpFile string) {
 
 	var sz int32 = 1
 	batch := llama.BatchInit(1, 0, 1)
-	batch.NSeqId = &sz
+	batch.NSeqID = &sz
 	batch.NTokens = 1
-	seqs := unsafe.SliceData([]llama.SeqId{0})
-	batch.SeqId = &seqs
+	seqs := unsafe.SliceData([]llama.SeqID{0})
+	batch.SeqID = &seqs
 
 	fmt.Println()
 
-	for i := 0; i < llama.MaxToken; i++ {
+	for range llama.MaxToken {
 		token := llama.SamplerSample(sampler, lctx, -1)
 
 		if llama.VocabIsEOG(vocab, token) {

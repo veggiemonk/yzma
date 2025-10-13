@@ -40,7 +40,7 @@ func testSetup(t *testing.T) {
 	llama.BackendInit()
 }
 
-func testCleanup(t *testing.T) {
+func testCleanup(_ *testing.T) {
 	llama.BackendFree()
 }
 

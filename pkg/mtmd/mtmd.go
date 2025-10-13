@@ -29,10 +29,12 @@ type InputText struct {
 }
 
 // Opaque types (represented as pointers)
-type Context uintptr
-type ImageTokens uintptr
-type InputChunk uintptr
-type InputChunks uintptr
+type (
+	Context     uintptr
+	ImageTokens uintptr
+	InputChunk  uintptr
+	InputChunks uintptr
+)
 
 //	struct mtmd_context_params {
 //	    bool use_gpu;
@@ -142,7 +144,6 @@ func loadFuncs(lib ffi.Lib) error {
 
 	if helperEvalChunksFunc, err = lib.Prep("mtmd_helper_eval_chunks", &ffi.TypeSint32, &ffi.TypePointer, &ffi.TypePointer, &ffi.TypePointer,
 		&ffi.TypeSint32, &ffi.TypeSint32, &ffi.TypeSint32, &ffi.TypeUint8, &ffi.TypePointer); err != nil {
-
 		return loadError("mtmd_helper_eval_chunks", err)
 	}
 
@@ -251,7 +252,7 @@ func NewInputText(text string, addSpecial, parseSpecial bool) *InputText {
 // if any of the mtmd.Encode() or llama.Decode() calls return non-zero, stop and forward the error
 // otherwise, returns 0 on success
 // this function is NOT thread-safe
-func HelperEvalChunks(ctx Context, lctx llama.Context, chunks InputChunks, nPast llama.Pos, seqID llama.SeqId, nBatch int32, logitsLast bool, newNPast *llama.Pos) int32 {
+func HelperEvalChunks(ctx Context, lctx llama.Context, chunks InputChunks, nPast llama.Pos, seqID llama.SeqID, nBatch int32, logitsLast bool, newNPast *llama.Pos) int32 {
 	muHelperEvalChunks.Lock()
 	defer muHelperEvalChunks.Unlock()
 

@@ -4,7 +4,7 @@ package llama
 type (
 	Token  int32
 	Pos    int32
-	SeqId  int32
+	SeqID  int32
 	Memory uintptr
 )
 
@@ -30,6 +30,7 @@ const (
 )
 
 // Enums
+
 type VocabType int32
 
 const (
@@ -185,14 +186,17 @@ const (
 )
 
 // Opaque types (represented as pointers)
-type Model uintptr
-type Context uintptr
-type Vocab uintptr
-type AdapterLora uintptr
+type (
+	Model       uintptr
+	Context     uintptr
+	Vocab       uintptr
+	AdapterLora uintptr
+)
 
 // Structs
+
 type TokenData struct {
-	Id    Token   // token id
+	ID    Token   // token id
 	Logit float32 // log-odds of the token
 	P     float32 // probability of the token
 }
@@ -209,8 +213,8 @@ type Batch struct {
 	Token   *Token   // tokens
 	Embd    *float32 // embeddings (if using embeddings instead of tokens)
 	Pos     *Pos     // positions
-	NSeqId  *int32   // number of sequence IDs per token
-	SeqId   **SeqId  // sequence IDs
+	NSeqID  *int32   // number of sequence IDs per token
+	SeqID   **SeqID  // sequence IDs
 	Logits  *int8    // whether to compute logits for each token
 }
 

@@ -6,17 +6,15 @@ import (
 	"github.com/jupiterrider/ffi"
 )
 
-var (
-	FFITypeContextParams = ffi.NewType(&ffi.TypeUint32, &ffi.TypeUint32, &ffi.TypeUint32, &ffi.TypeUint32,
-		&ffi.TypeSint32, &ffi.TypeSint32,
-		&ffi.TypeSint32, &ffi.TypeSint32, &ffi.TypeSint32, &ffi.TypeSint32,
-		&ffi.TypeFloat, &ffi.TypeFloat, &ffi.TypeFloat, &ffi.TypeFloat, &ffi.TypeFloat, &ffi.TypeFloat,
-		&ffi.TypeUint32, &ffi.TypeFloat,
-		&ffi.TypePointer, &ffi.TypePointer,
-		&ffi.TypeSint32, &ffi.TypeSint32,
-		&ffi.TypePointer, &ffi.TypePointer,
-		&ffi.TypeUint8, &ffi.TypeUint8, &ffi.TypeUint8, &ffi.TypeUint8, &ffi.TypeUint8, &ffi.TypeUint8)
-)
+var FFITypeContextParams = ffi.NewType(&ffi.TypeUint32, &ffi.TypeUint32, &ffi.TypeUint32, &ffi.TypeUint32,
+	&ffi.TypeSint32, &ffi.TypeSint32,
+	&ffi.TypeSint32, &ffi.TypeSint32, &ffi.TypeSint32, &ffi.TypeSint32,
+	&ffi.TypeFloat, &ffi.TypeFloat, &ffi.TypeFloat, &ffi.TypeFloat, &ffi.TypeFloat, &ffi.TypeFloat,
+	&ffi.TypeUint32, &ffi.TypeFloat,
+	&ffi.TypePointer, &ffi.TypePointer,
+	&ffi.TypeSint32, &ffi.TypeSint32,
+	&ffi.TypePointer, &ffi.TypePointer,
+	&ffi.TypeUint8, &ffi.TypeUint8, &ffi.TypeUint8, &ffi.TypeUint8, &ffi.TypeUint8, &ffi.TypeUint8)
 
 var (
 	// LLAMA_API struct llama_context_params        llama_context_default_params(void);
@@ -185,7 +183,7 @@ func MemoryClear(mem Memory, data bool) {
 // seqID < 0 : match any sequence
 // p0 < 0     : [0,  p1]
 // p1 < 0     : [p0, inf)
-func MemorySeqRm(mem Memory, seqID SeqId, p0, p1 Pos) bool {
+func MemorySeqRm(mem Memory, seqID SeqID, p0, p1 Pos) bool {
 	var result ffi.Arg
 	memorySeqRmFunc.Call(unsafe.Pointer(&result), unsafe.Pointer(&mem), &seqID, &p0, &p1)
 
@@ -224,7 +222,7 @@ func GetEmbeddingsIth(ctx Context, i int32) []float32 {
 }
 
 // GetEmbeddingsSeq gets the embeddings for this sequence ID.
-func GetEmbeddingsSeq(ctx Context, seqID SeqId, i int32) []float32 {
+func GetEmbeddingsSeq(ctx Context, seqID SeqID, i int32) []float32 {
 	var result ffi.Arg
 	getEmbeddingsSeqFunc.Call(unsafe.Pointer(&result), unsafe.Pointer(&ctx), &seqID)
 
