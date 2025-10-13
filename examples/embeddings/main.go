@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"math"
 
 	"github.com/hybridgroup/yzma/pkg/llama"
 )
@@ -81,12 +82,20 @@ func run(ctx context.Context) error {
 	nEmbd := llama.ModelNEmbd(model)
 	vec := llama.GetEmbeddingsSeq(lctx, 0, nEmbd)
 
+	// normalize embeddings
+	var sum float64
+	for _, v := range vec {
+		sum += float64(v * v)
+	}
+	sum = math.Sqrt(sum)
+	norm := float32(1.0 / sum)
+
 	var b strings.Builder
 	for i, v := range vec {
 		if i > 0 {
 			b.WriteString(" ")
 		}
-		b.WriteString(fmt.Sprintf("%f", v))
+		b.WriteString(fmt.Sprintf("%f", v*norm))
 	}
 	fmt.Println(b.String())
 
