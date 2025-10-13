@@ -218,7 +218,7 @@ func GetEmbeddingsIth(ctx Context, i int32) []float32 {
 	var result ffi.Arg
 	getEmbeddingsIthFunc.Call(unsafe.Pointer(&result), unsafe.Pointer(&ctx), &i)
 
-	return unsafe.Slice(((*float32)(unsafe.Pointer(&result))), i)
+	return unsafe.Slice(((*float32)(unsafe.Pointer(uintptr(result)))), i)
 }
 
 // GetEmbeddingsSeq gets the embeddings for this sequence ID.
@@ -226,5 +226,5 @@ func GetEmbeddingsSeq(ctx Context, seqID SeqID, i int32) []float32 {
 	var result ffi.Arg
 	getEmbeddingsSeqFunc.Call(unsafe.Pointer(&result), unsafe.Pointer(&ctx), &seqID)
 
-	return unsafe.Slice(((*float32)(unsafe.Pointer(&result))), i)
+	return unsafe.Slice(((*float32)(unsafe.Pointer(uintptr(result)))), i)
 }

@@ -338,5 +338,5 @@ func Tokenize(vocab Vocab, text string, tokens []Token, addSpecial bool, parseSp
 	tokenizeFunc.Call(unsafe.Pointer(&result), unsafe.Pointer(&vocab), unsafe.Pointer(&txt), &txtLen,
 		unsafe.Pointer(&toks), &nTokensMax, &addSpecial, &parseSpecial)
 
-	return int32(result)
+	return -int32(result)
 }

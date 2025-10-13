@@ -17,28 +17,69 @@ func main() {
 	}
 }
 
+const usage = `
+  -model string
+    	path to the GGUF model
+  -prompt string
+    	prompt to embed
+  -pooling string
+    	pooling type for embeddings (mean, cls, none)
+`
+
 func run(ctx context.Context) error {
-	model, prompt := parseFlags()
-	if model == "" || prompt == "" {
+	var modelFlag, prompt, pooling string
+	flag.StringVar(&modelFlag, "model", "", "path to the GGUF model")
+	flag.StringVar(&prompt, "prompt", "", "prompt to embed")
+	flag.StringVar(&pooling, "pooling", "mean", "pooling type for embeddings (mean, cls, none)")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "usage: embeddings %s\n", usage)
+	}
+	flag.Parse()
+	if modelFlag == "" || prompt == "" {
 		flag.Usage()
 		return nil
 	}
-
-	l, err := llama.New(model)
-	if err != nil {
-		return err
+	var poolingType llama.PoolingType
+	switch pooling {
+	case "mean":
+		poolingType = llama.PoolingTypeMean
+	case "cls":
+		poolingType = llama.PoolingTypeCLS
+	case "none":
+		poolingType = llama.PoolingTypeNone
+	default:
+		poolingType = llama.PoolingTypeUnspecified
 	}
-	defer l.Free()
 
-	embedding, err := l.NewEmbedding()
-	if err != nil {
-		return err
-	}
+	// load library and init
+	llama.Load(os.Getenv("YZMA_LIB"))
+	llama.Init()
+	defer llama.BackendFree()
 
-	vec, err := embedding.Eval(prompt)
-	if err != nil {
-		return err
-	}
+	// load model
+	model := llama.ModelLoadFromFile(modelFlag, llama.ModelDefaultParams())
+	defer llama.ModelFree(model)
+
+	// create context
+	params := llama.ContextDefaultParams()
+	params.PoolingType = poolingType
+	params.Embeddings = 1
+	lctx := llama.InitFromModel(model, params)
+	defer llama.Free(lctx)
+
+	// tokenize prompt
+	vocab := llama.ModelGetVocab(model)
+	count := llama.Tokenize(vocab, prompt, nil, true, true)
+	tokens := make([]llama.Token, count)
+	llama.Tokenize(vocab, prompt, tokens, true, true)
+
+	// create batch and decode
+	batch := llama.BatchGetOne(tokens)
+	llama.Decode(lctx, batch)
+
+	// get embeddings
+	nEmbd := llama.ModelNEmbd(model)
+	vec := llama.GetEmbeddingsSeq(lctx, 0, nEmbd)
 
 	var b strings.Builder
 	for i, v := range vec {
@@ -51,3 +92,4 @@ func run(ctx context.Context) error {
 
 	return nil
 }
+
